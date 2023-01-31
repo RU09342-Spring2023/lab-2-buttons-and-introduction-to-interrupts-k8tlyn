@@ -76,6 +76,8 @@ Then load up Energy Trace and perform the similar capture of Power with the LED 
 
 
 # Screenshots and Answers to Questions
+1. The polling example was higher than the interrupt example because the processor is constantly looking for a button press as opposed to the interrupt which only pays attention when the button is pressed.
+2. Even with nothing on the polling example still has increased power because it is constantly waiting for a button push.
 With interrupts:
 ![image](https://user-images.githubusercontent.com/113446610/215889797-200c656d-279c-4e24-8f0b-fc455e9e9b71.png)
 with polling:
