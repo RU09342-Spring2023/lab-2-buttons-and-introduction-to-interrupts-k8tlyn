@@ -28,15 +28,19 @@ int main(void)
 
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
                                             // to activate previously configured port settings
-
-
     while(1)
     {
-        if (P2IN & BIT3)            // If S2 (P2.3) is pressed
-            P6OUT ^= BIT6;          // Toggle P6.6
-        if (P4IN & BIT1)            // If S1 (P4.1) is pressed
-            P1OUT ^= BIT0;          // Toggle P1.0
+
+
+       if (!(P2IN & BIT3))            // If S2 (P2.3) is pressed
+            P6OUT ^= BIT6;          // Toggle P6.6                      //green LED
+
+      if (!(P4IN & BIT1))            // If S1 (P4.1) is pressed
+            P1OUT ^= BIT0;          // Toggle P1.0      //red LED
+
         __delay_cycles(100000);             // Delay for 100000*(1/MCLK)=0.1s
+
+
     }
 
 
@@ -49,7 +53,7 @@ void gpioInit()
 
        P1DIR |= BIT0;              // Configure P1.0 to an Output
        P6DIR |= BIT6;              // Configure P6.6 to an Output
-       P2DIR &= ~BIT3;             // Configure P2.3 to an Input
+       P2DIR &= ~BIT3;             // Configure P2.3 to an Input            //it essentially sets it to a zero
        P4DIR &= ~BIT1;             // Configure P4.1 to an Input
 
    // Configuring Pullup Resistors per MSP430FR2355 Family User Guide
@@ -61,7 +65,7 @@ void gpioInit()
     *     1       X       X     Output
     */
 
-       P2REN |= BIT3;               // Enable Resistor on P2.3
+       P2REN |= BIT3;               // Enable Resistor on P2.3              //it essentially sets it to a one
        P2OUT |= BIT3;               // Configure Resistor on P2.3 to be Pullup
 
        P4REN |= BIT1;               // Enable Resistor on P4.1
