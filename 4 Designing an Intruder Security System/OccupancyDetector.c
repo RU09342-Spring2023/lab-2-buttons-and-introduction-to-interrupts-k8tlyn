@@ -36,9 +36,9 @@ int main() {
         int timer = 0;
         int timer2 = 0;
         int state;
-        int armed = 0;
-        int warning = 1;
-        int alert = 2;
+       const int armed = 0;
+       const int warning = 1;
+       const int alert = 2;
 
 
         while(1)
@@ -47,21 +47,20 @@ int main() {
             state = armed;
 
             switch(state){
-               case 0:         //armed: BLINK GREEN LED (once every 3 seconds)
+               case armed:         //armed: BLINK GREEN LED (once every 3 seconds)
                      if(P2IN & BIT3){                //if button is not pushed
                          P1OUT &= ~BIT0;               //disable red LED
                          P6OUT ^= BIT6;                //toggle green LED
                          __delay_cycles(1000000);      // Delay for 1000000*(1/MCLK)=1s
                          P6OUT &= ~BIT6;               //green LED off
                          __delay_cycles(2500000);      // Delay for 2500000*(1/MCLK)=2.5s
-                         state = armed;
                      }
                      else{
                          P6OUT &= ~BIT6;                //disable green LED
                          state = warning;               //move to warning state
                      }
 
-               case 1:              //warning: BLINK RED LED (on for 500 ms and off for 500s)
+               case warning:              //warning: BLINK RED LED (on for 500 ms and off for 500s)
                    while(!(P2IN & BIT3) && (timer < 10)){                        //if button is being pressed
                            P1OUT ^= BIT0;                //toggle red LED
                            __delay_cycles(500000);             // Delay for 500000*(1/MCLK)=.5s
@@ -75,18 +74,20 @@ int main() {
                     else if (!(P2IN & BIT3) && (timer == 10))
                        state = alert;
 
-               case 2:                    //alert: RED LED ON, IF BUTTON RELEASED IN FIRST 5 SECONDS STATE = ARMED
-                   P1OUT ^= BIT0;                     //toggle red LED
-                   while(timer2 < 5){                     //during first 5 seconds in alert state
-                        __delay_cycles(1000000);          // Delay for 1000000*(1/MCLK)=1s
-                        timer2++;
+               case alert:                    //alert: RED LED ON, IF BUTTON RELEASED IN FIRST 5 SECONDS STATE = ARMED
+                   if (!(P2IN & BIT3)){
+                       P1OUT ^= BIT0;                     //toggle red LED
+                       while(timer2 < 5){                     //during first 5 seconds in alert state
+                           __delay_cycles(1000000);          // Delay for 1000000*(1/MCLK)=1s
+                           timer2++;
+                       }
                    }
                    if((P2IN & BIT3) && (timer2 < 5)){      //if button is released and 15 seconds hasn't passed
                           state = armed;
                    }
                    else
                           state = alert;
-                  if(!(P4IN & BIT1)){                    //if rst button is pushed
+                  if(!(P4IN & BIT1) && (timer2 == 5)){                    //if rst button is pushed
                       state = armed;
                   }
             }
